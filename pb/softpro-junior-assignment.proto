@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option go_package = "github.com/softpro-junior-assignment/pb";
+
+/*
+Можно определить enum для допустимых имен спортов и пересылать будем гораздо меньший объем данных,
+но зато на сервере будет больше работы по отображению интов на строки и обратно в операциях
+по подготовке перед приемом/отдачей сообщений.
+ */
+message SubscribeOnSportsLinesRequest {
+  uint32 interval = 1;
+  repeated string sport_names = 2;
+}
+
+message SubscribeOnSportsLinesResponse {
+  repeated SportInfo sport_infos = 1;
+}
+
+message SportInfo {
+  string name = 1;
+  float line = 2;
+}
+
+service SportsLinesService {
+  rpc SubscribeOnSportsLines (stream SubscribeOnSportsLinesRequest) returns (stream SubscribeOnSportsLinesResponse);
+}
