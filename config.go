@@ -56,9 +56,9 @@ type Config struct {
 func DefaultConfig() Config {
 	return Config{
 		HTTPPort:                    9000,
-		HTTPIP:                      "localhost",
+		HTTPIP:                      "",
 		GRPCPort:                    9001,
-		GRPCIP:                      "localhost",
+		GRPCIP:                      "",
 		LinesProviderPort:           8000,
 		LinesProviderIP:             "localhost",
 		Logmode:                     false,

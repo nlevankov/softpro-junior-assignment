@@ -12,7 +12,7 @@ import (
 )
 
 // должен совпадать с адресом сервера
-const addr = "localhost:9001"
+const addr = "192.168.99.100:9001"
 
 func main() {
 	option := flag.Int("o", 1, "Command to run")
