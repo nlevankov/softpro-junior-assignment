@@ -143,7 +143,10 @@ func main() {
 	}
 
 	go func() {
-		os.Stdin.Read(make([]byte, 1))
+		_, err := os.Stdin.Read(make([]byte, 1))
+		if err != nil {
+			log.Fatalf("Can't read from stdin")
+		}
 		close(abort)
 	}()
 
