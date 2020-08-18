@@ -95,7 +95,7 @@ func setSchema(db *gorm.DB) error {
 		return err
 	}
 
-	err = db.CreateTable(
+	err = db.Debug().CreateTable(
 		&Baseball{},
 		&Football{},
 		&Soccer{},
