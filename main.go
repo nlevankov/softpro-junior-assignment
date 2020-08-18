@@ -79,7 +79,9 @@ func main() {
 	r.HandleFunc("/ready", ReadyHandler).Methods(http.MethodGet)
 
 	httpAdress := fmt.Sprintf(cfg.HTTPIP+":%d", cfg.HTTPPort)
-	go http.ListenAndServe(httpAdress, r)
+	go func() {
+		must(http.ListenAndServe(httpAdress, r))
+	}()
 	fmt.Printf("Started HTTP server on %v\n", httpAdress)
 
 	// try to sync the storage
@@ -155,7 +157,9 @@ func main() {
 	}
 	server := grpc.NewServer()
 	pb.RegisterSportsLinesServiceServer(server, &sportsLinesServer{db: s.DB})
-	go server.Serve(lis)
+	go func() {
+		must(server.Serve(lis))
+	}()
 	fmt.Printf("Started gRPC server on %v\nPress return to exit correctly\n", grpcAdress)
 
 	n.Wait()
