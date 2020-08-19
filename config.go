@@ -40,30 +40,34 @@ func DefaultPostgresConfig() PostgresConfig {
 }
 
 type Config struct {
-	HTTPPort                    uint            `json:"http_port"` // т.к. в задании указано "Адрес", поэтому две составляющие
-	HTTPIP                      string          `json:"http_ip"`
-	GRPCPort                    uint            `json:"grpc_port"`
-	GRPCIP                      string          `json:"grpc_ip"`
-	LinesProviderPort           uint            `json:"lines_provider_port"`
-	LinesProviderIP             string          `json:"lines_provider_ip"`
-	Logmode                     bool            `json:"log_mode"`
-	FirstSyncNumOfAttempts      uint            `json:"first_sync_num_of_attempts"`
-	FirstSyncIntervalBWAttempts uint            `json:"first_sync_interval_bw_attempts"`
-	Intervals                   map[string]uint `json:"intervals"`
-	Database                    PostgresConfig  `json:"database"`
+	HTTPPort                      uint            `json:"http_port"` // т.к. в задании указано "Адрес", поэтому две составляющие
+	HTTPIP                        string          `json:"http_ip"`
+	GRPCPort                      uint            `json:"grpc_port"`
+	GRPCIP                        string          `json:"grpc_ip"`
+	LinesProviderPort             uint            `json:"lines_provider_port"`
+	LinesProviderIP               string          `json:"lines_provider_ip"`
+	Logmode                       bool            `json:"log_mode"`
+	FirstSyncNumOfAttempts        uint            `json:"first_sync_num_of_attempts"`
+	FirstSyncIntervalBWAttempts   uint            `json:"first_sync_interval_bw_attempts"`
+	StorageConnNumOfAttempts      uint            `json:"storage_conn_num_of_attempts"`
+	StorageConnIntervalBWAttempts uint            `json:"storage_conn_interval_bw_attempts"`
+	Intervals                     map[string]uint `json:"intervals"`
+	Database                      PostgresConfig  `json:"database"`
 }
 
 func DefaultConfig() Config {
 	return Config{
-		HTTPPort:                    9000,
-		HTTPIP:                      "",
-		GRPCPort:                    9001,
-		GRPCIP:                      "",
-		LinesProviderPort:           8000,
-		LinesProviderIP:             "localhost",
-		Logmode:                     false,
-		FirstSyncNumOfAttempts:      3,
-		FirstSyncIntervalBWAttempts: 1,
+		HTTPPort:                      9000,
+		HTTPIP:                        "",
+		GRPCPort:                      9001,
+		GRPCIP:                        "",
+		LinesProviderPort:             8000,
+		LinesProviderIP:               "localhost",
+		Logmode:                       false,
+		FirstSyncNumOfAttempts:        3,
+		FirstSyncIntervalBWAttempts:   1,
+		StorageConnNumOfAttempts:      3,
+		StorageConnIntervalBWAttempts: 3,
 		Intervals: map[string]uint{
 			"baseball": 1,
 			"football": 1,
@@ -122,10 +126,16 @@ func LoadConfig(configReq bool) Config {
 		log.Fatal("LinesProvider's HTTP port can't be 0")
 	}
 	if c.FirstSyncNumOfAttempts == 0 {
-		log.Fatal("A number of attempts can't be 0")
+		log.Fatal("A number of attempts can't be 0 (Lines Provider reconnection parameter)")
 	}
 	if c.FirstSyncIntervalBWAttempts == 0 {
-		log.Fatal("An interval between attempts can't be 0")
+		log.Fatal("An interval between attempts can't be 0 (Lines Provider reconnection parameter)")
+	}
+	if c.StorageConnNumOfAttempts == 0 {
+		log.Fatal("A number of attempts can't be 0 (Storage reconnection parameter)")
+	}
+	if c.StorageConnIntervalBWAttempts == 0 {
+		log.Fatal("An interval between attempts can't be 0 (Storage reconnection parameter)")
 	}
 
 	fmt.Println("Successfully loaded .config")

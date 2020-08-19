@@ -44,7 +44,7 @@ func main() {
 	// creating services
 
 	s, err := services.NewServices(
-		services.WithGorm(cfg.Database.Dialect(), cfg.Database.ConnectionInfo()),
+		services.WithGorm(cfg.Database.Dialect(), cfg.Database.ConnectionInfo(), int(cfg.StorageConnNumOfAttempts), int(cfg.StorageConnIntervalBWAttempts)),
 		services.WithLogMode(cfg.Logmode),
 		services.WithSetSchema(!(*prodFlagPtr) && *setSchemaFlagPtr),
 	)

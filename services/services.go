@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"os"
+	"time"
 )
 
 type ServicesConfig func(*Services) error
@@ -26,16 +27,23 @@ func NewServices(cfgs ...ServicesConfig) (*Services, error) {
 	return &s, nil
 }
 
-func WithGorm(dialect, connectionInfo string) ServicesConfig {
+func WithGorm(dialect, connectionInfo string, num, interval int) ServicesConfig {
 	return func(s *Services) error {
-		db, err := gorm.Open(dialect, connectionInfo)
-		if err != nil {
-			log.Println("Can't connect to DB, check your connection info in .config (if provided) or default connection info.")
-			return err
-		}
-		s.DB = db
+		var err error
+		for i := 0; i < num; i++ {
+			db, err := gorm.Open(dialect, connectionInfo)
+			if err == nil {
+				log.Println("Successfully connected to the storage")
+				s.DB = db
+				return nil
+			}
 
-		return nil
+			log.Printf("Can't connect to the storage, next try in %d second(s) (%d attempt of %d)\n", interval, i+1, num)
+			time.Sleep(time.Duration(interval) * time.Second)
+		}
+
+		log.Println("Can't connect to the storage, check your connection info in .config (if provided) or default connection info or the storage availability.")
+		return err
 	}
 }
 
