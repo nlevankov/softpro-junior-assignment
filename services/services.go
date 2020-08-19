@@ -80,8 +80,10 @@ func WithSetSchema(mode bool) ServicesConfig {
 }
 
 func (s *Services) Close() {
-	if err := s.logFile.Close(); err != nil {
-		log.Println(err)
+	if s.logFile != nil {
+		if err := s.logFile.Close(); err != nil {
+			log.Println(err)
+		}
 	}
 	s.CloseStorage()
 }
