@@ -9,7 +9,9 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/softpro-junior-assignment/pb"
@@ -143,10 +145,10 @@ func main() {
 	}
 
 	go func() {
-		_, err := os.Stdin.Read(make([]byte, 1))
-		if err != nil {
-			log.Fatalf("Can't read from stdin")
-		}
+		sigs := make(chan os.Signal, 1)
+		signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT)
+		sig := <-sigs
+		log.Printf("Got <%v> signal, shutting down the workers...", sig)
 		close(abort)
 	}()
 
@@ -163,7 +165,7 @@ func main() {
 	go func() {
 		must(server.Serve(lis))
 	}()
-	fmt.Printf("Started gRPC server on %v\nPress return to exit correctly\n", grpcAdress)
+	fmt.Printf("Started gRPC server on %v\nSend SIGINT or SIGTERM to exit correctly\n", grpcAdress)
 
 	n.Wait()
 }
